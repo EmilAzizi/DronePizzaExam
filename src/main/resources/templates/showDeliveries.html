@@ -63,22 +63,29 @@
             cursor: pointer;
             border-radius: 5px;
         }
+        .finish-button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
 <h1>Leveringer</h1>
 
 <div class="form-container">
-    <input type="text" id="deliveryAddress" placeholder="Skriv leveringsadresse her..." />
+    <input type="text" id="deliveryAddress" placeholder="Skriv hvilken pizza her..." />
     <button id="addDeliveryButton">Tilføj Levering</button>
-
 </div>
 
 <div id="deliveriesContainer">
     <!-- Leveringer tilføjes her dynamisk -->
 </div>
 <div class="error" id="errorMessage"></div>
-
 
 <form action="/deliveries/queue" method="get">
     <button class="button" id="viewDeliveries">Se alle leveringer uden en drone</button>
@@ -120,6 +127,7 @@
                 <p><strong>Adresse:</strong> ${delivery.adresse || "Ikke angivet"}</p>
                 <p><strong>Forventet Levering:</strong> ${delivery.forventet_levering || "Ikke angivet"}</p>
                 <p><strong>Faktisk Levering:</strong> ${delivery.faktisk_levering || "Ikke angivet"}</p>
+                <button class="finish-button" data-id="${delivery.levering_ID}">Afslut Levering</button>
             `;
             deliveriesContainer.appendChild(deliveryDiv);
         });
@@ -149,6 +157,29 @@
             console.error(error.message);
         }
     }
+
+    // Funktion til at afslutte en levering
+    async function finishDelivery(id) {
+        try {
+            const response = await fetch(`/api/deliveries/finish/${id}`, { method: "POST" });
+            if (!response.ok) {
+                throw new Error("Kunne ikke afslutte leveringen.");
+            }
+            alert(`Levering med ID ${id} er afsluttet.`);
+            fetchDeliveries(); // Opdater listen efter afslutningen
+        } catch (error) {
+            errorMessage.textContent = error.message;
+            console.error(error.message);
+        }
+    }
+
+    // Event listener for at afslutte en levering
+    deliveriesContainer.addEventListener("click", (event) => {
+        if (event.target.classList.contains("finish-button")) {
+            const deliveryId = event.target.dataset.id;
+            finishDelivery(deliveryId);
+        }
+    });
 
     // Event listener for at tilføje en levering
     addDeliveryButton.addEventListener("click", addDelivery);
