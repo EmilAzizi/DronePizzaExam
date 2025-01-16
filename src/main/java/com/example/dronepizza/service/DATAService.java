@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class DATAService {
@@ -18,6 +19,8 @@ public class DATAService {
     private List<Station> allStations;
 
     private List<Levering> allDeliveries;
+
+    private List<Drone> availableDrones = new ArrayList<>();
 
     private List<Levering> deliveriesMissingDrone = new ArrayList<>();
 
@@ -146,4 +149,49 @@ public class DATAService {
         }
         return deliveriesMissingDrone;
     }
+
+    public void assignDroneToDelivery(int deliveryID) {
+        // Find leveringen uden en drone
+        Levering deliveryToAssignDroneTo = null;
+        allDeliveries = repository.getAllDeliveries();
+
+        for (Levering levering : allDeliveries) {
+            if (levering.getLevering_ID() == deliveryID) {
+                if (levering.getDrone() != null) {
+                    throw new IllegalStateException("Leveringen har allerede en drone.");
+                }
+                deliveryToAssignDroneTo = levering;
+                break;
+            }
+        }
+
+        if (deliveryToAssignDroneTo == null) {
+            throw new IllegalArgumentException("Levering med ID " + deliveryID + " blev ikke fundet.");
+        }
+
+        // Tjek om der overhovedet er en tilgængelig drone
+        allDrones = repository.getAllDrones();
+        if (allDrones.stream().noneMatch(drone -> drone.getDriftStatus() == DriftStatus.I_DRIFT && drone.getLeveringList().isEmpty())) {
+            throw new IllegalStateException("Ingen droner tilgængelige til levering.");
+        }
+
+        // Find en drone, der er "i drift" og ikke er i brug
+        boolean droneFound = false;
+        Random random = new Random();
+
+        while (!droneFound) {
+            // Vælg en tilfældig drone
+            Drone randomDrone = allDrones.get(random.nextInt(allDrones.size()));
+
+            // Tjek om dronen er i drift og ikke er i brug
+            if (randomDrone.getDriftStatus() == DriftStatus.I_DRIFT && randomDrone.getLeveringList().isEmpty()) {
+                // Tildel dronen til leveringen
+                deliveryToAssignDroneTo.setDrone(randomDrone);
+                repository.saveDelivery(deliveryToAssignDroneTo);
+                droneFound = true;
+            }
+        }
+    }
+
+
 }

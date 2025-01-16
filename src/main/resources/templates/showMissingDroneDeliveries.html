@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Leveringer</title>
+  <title>Leveringer uden droner</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -63,6 +63,15 @@
       cursor: pointer;
       border-radius: 5px;
     }
+    .assign-button {
+      margin-top: 10px;
+      padding: 5px 10px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
@@ -72,7 +81,6 @@
   <form action="/deliveries" method="get">
     <button type="submit">Tilbage</button>
   </form>
-
 </div>
 
 <div id="deliveriesContainer">
@@ -83,10 +91,8 @@
 <script>
   const deliveriesContainer = document.getElementById("deliveriesContainer");
   const errorMessage = document.getElementById("errorMessage");
-  const addDeliveryButton = document.getElementById("addDeliveryButton");
-  const deliveryAddressInput = document.getElementById("deliveryAddress");
 
-  // Funktion til at hente leveringer
+  // Funktion til at hente leveringer uden droner
   async function fetchDeliveries() {
     try {
       const response = await fetch("/api/deliveries/queue");
@@ -114,10 +120,42 @@
                 <p><strong>Forventet Levering:</strong> ${delivery.forventet_levering || "Ikke angivet"}</p>
                 <p><strong>Faktisk Levering:</strong> ${delivery.faktisk_levering || "Ikke angivet"}</p>
                 <p><strong>Drone UUID:</strong> ${delivery.drone ? delivery.drone.serial_UUID : "Ingen drone"}</p>
+                ${
+              !delivery.drone
+                      ? `<button class="assign-button" data-delivery-id="${delivery.levering_ID}">
+                         Tildel Drone
+                       </button>`
+                      : ""
+      }
             `;
       deliveriesContainer.appendChild(deliveryDiv);
     });
+
+    // Tilføj event listeners til knapperne
+    const assignButtons = document.querySelectorAll(".assign-button");
+    assignButtons.forEach(button => {
+      button.addEventListener("click", () => assignDrone(button.dataset.deliveryId));
+    });
   }
+
+  // Funktion til at tildele en drone til en levering
+  async function assignDrone(deliveryId) {
+    try {
+      const response = await fetch(`/api/deliveries/schedule/${deliveryId}`, {
+        method: "POST",
+      });
+      if (!response.ok) {
+        throw new Error(`Kunne ikke tildele en drone til levering ID: ${deliveryId}`);
+      }
+      alert(`Drone tildelt til levering ID: ${deliveryId}`);
+      fetchDeliveries(); // Opdater listen efter tildeling
+    } catch (error) {
+      errorMessage.textContent = error.message;
+      console.error(error.message);
+    }
+  }
+
+  // Hent leveringer ved indlæsning af siden
   fetchDeliveries();
   setInterval(fetchDeliveries, 60000); // Opdater hver 60. sekund
 </script>

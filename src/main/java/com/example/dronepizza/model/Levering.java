@@ -84,4 +84,8 @@ public class Levering {
     public void setPizza(Pizza pizza) {
         this.pizza = pizza;
     }
+
+    public void setLevering_ID(int levering_ID) {
+        this.levering_ID = levering_ID;
+    }
 }
