@@ -132,7 +132,7 @@ public class DATAService {
 
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime expectedDeliveryTime = currentTime.plusMinutes(30);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-mm-yyyy HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
         leveringToSaveInDB.setForventet_levering(expectedDeliveryTime.format(formatter));
 
@@ -191,6 +191,39 @@ public class DATAService {
                 droneFound = true;
             }
         }
+    }
+
+    public void finishDelivery(int ID) {
+        Levering deliveryToFinish = null;
+        allDeliveries = repository.getAllDeliveries();
+
+        for (Levering delivery : allDeliveries) {
+            if (delivery.getLevering_ID() == ID) {
+                if (delivery.getDrone() == null) {
+                    throw new IllegalArgumentException("Levering med ID " + ID + " har ikke en drone tildelt.");
+                }
+                deliveryToFinish = delivery;
+                break;
+            }
+        }
+
+        // Hvis leveringen ikke blev fundet, smid en exception
+        if (deliveryToFinish == null) {
+            throw new IllegalArgumentException("Levering med ID " + ID + " blev ikke fundet.");
+        }
+
+        if(deliveryToFinish.getStatus() == LeveringStatus.LEVERET){
+            throw new IllegalArgumentException("Leveringen er allerede færdig.");
+        }
+
+        // Sæt leveringen til LEVERET
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime expectedDeliveryTime = currentTime.plusMinutes(0);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+
+        deliveryToFinish.setFaktisk_levering(expectedDeliveryTime.format(formatter));
+        deliveryToFinish.setStatus(LeveringStatus.LEVERET);
+        repository.saveDelivery(deliveryToFinish);
     }
 
 

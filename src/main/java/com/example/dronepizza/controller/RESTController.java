@@ -85,4 +85,9 @@ public class RESTController {
     public void assignDrone(@PathVariable int ID){
         service.assignDroneToDelivery(ID);
     }
+
+    @PostMapping("/api/deliveries/finish/{ID}")
+    public void finishDelivery(@PathVariable int ID){
+        service.finishDelivery(ID);
+    }
 }
