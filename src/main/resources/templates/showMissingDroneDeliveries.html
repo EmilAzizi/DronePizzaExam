@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leveringer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .delivery {
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      position: relative;
+    }
+    .delivery:not(:last-child)::after {
+      content: "";
+      display: block;
+      height: 3px;
+      background-color: red;
+      margin-top: 20px;
+    }
+    .delivery h2 {
+      margin: 0;
+      color: #333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid black;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+    .form-container {
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+    .form-container input {
+      margin-right: 10px;
+      padding: 5px;
+      width: calc(100% - 140px);
+    }
+    .form-container button {
+      padding: 5px 10px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+<h1>Leveringer uden droner</h1>
+
+<div class="form-container">
+  <form action="/deliveries" method="get">
+    <button type="submit">Tilbage</button>
+  </form>
+
+</div>
+
+<div id="deliveriesContainer">
+  <!-- Leveringer tilføjes her dynamisk -->
+</div>
+<div class="error" id="errorMessage"></div>
+
+<script>
+  const deliveriesContainer = document.getElementById("deliveriesContainer");
+  const errorMessage = document.getElementById("errorMessage");
+  const addDeliveryButton = document.getElementById("addDeliveryButton");
+  const deliveryAddressInput = document.getElementById("deliveryAddress");
+
+  // Funktion til at hente leveringer
+  async function fetchDeliveries() {
+    try {
+      const response = await fetch("/api/deliveries/queue");
+      if (!response.ok) {
+        throw new Error("Kunne ikke hente leveringer.");
+      }
+      const deliveries = await response.json();
+      renderDeliveries(deliveries);
+    } catch (error) {
+      errorMessage.textContent = error.message;
+      console.error(error.message);
+    }
+  }
+
+  // Funktion til at vise leveringer
+  function renderDeliveries(deliveries) {
+    deliveriesContainer.innerHTML = ""; // Tøm containeren
+    deliveries.forEach(delivery => {
+      const deliveryDiv = document.createElement("div");
+      deliveryDiv.className = "delivery";
+      deliveryDiv.innerHTML = `
+                <h2>Levering ID: ${delivery.levering_ID}</h2>
+                <p><strong>Status:</strong> ${delivery.status || "Ikke angivet"}</p>
+                <p><strong>Adresse:</strong> ${delivery.adresse || "Ikke angivet"}</p>
+                <p><strong>Forventet Levering:</strong> ${delivery.forventet_levering || "Ikke angivet"}</p>
+                <p><strong>Faktisk Levering:</strong> ${delivery.faktisk_levering || "Ikke angivet"}</p>
+                <p><strong>Drone UUID:</strong> ${delivery.drone ? delivery.drone.serial_UUID : "Ingen drone"}</p>
+            `;
+      deliveriesContainer.appendChild(deliveryDiv);
+    });
+  }
+  fetchDeliveries();
+  setInterval(fetchDeliveries, 60000); // Opdater hver 60. sekund
+</script>
+</body>
+</html>

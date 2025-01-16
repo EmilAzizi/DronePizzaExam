@@ -50,4 +50,8 @@ public class BERepository {
         allDeliveries = leveringInterface.findAll();
         return allDeliveries;
     }
+
+    public void saveDelivery(Levering levering){
+        leveringInterface.save(levering);
+    }
 }

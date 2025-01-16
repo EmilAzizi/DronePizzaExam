@@ -1,12 +1,12 @@
 package com.example.dronepizza.service;
 
-import com.example.dronepizza.model.DriftStatus;
-import com.example.dronepizza.model.Drone;
-import com.example.dronepizza.model.Levering;
-import com.example.dronepizza.model.Station;
+import com.example.dronepizza.model.*;
 import com.example.dronepizza.repository.BERepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,6 +18,8 @@ public class DATAService {
     private List<Station> allStations;
 
     private List<Levering> allDeliveries;
+
+    private List<Levering> deliveriesMissingDrone = new ArrayList<>();
 
     public DATAService(BERepository repository){
         this.repository = repository;
@@ -120,4 +122,28 @@ public class DATAService {
         return allDeliveries;
     }
 
+    public void createDelivery(Levering levering){
+        Levering leveringToSaveInDB = levering;
+
+        leveringToSaveInDB.setStatus(LeveringStatus.IKKE_LEVERET);
+
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime expectedDeliveryTime = currentTime.plusMinutes(30);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-mm-yyyy HH:mm:ss");
+
+        leveringToSaveInDB.setForventet_levering(expectedDeliveryTime.format(formatter));
+
+        repository.saveDelivery(leveringToSaveInDB);
+    }
+
+    public List<Levering> checkForMissingDrones(){
+        deliveriesMissingDrone.clear();
+        allDeliveries = repository.getAllDeliveries();
+        for(Levering levering : allDeliveries){
+            if(levering.getDrone() == null && !deliveriesMissingDrone.contains(levering)){
+                deliveriesMissingDrone.add(levering);
+            }
+        }
+        return deliveriesMissingDrone;
+    }
 }
