@@ -38,30 +38,27 @@ public class RESTController {
     }
 
     @PostMapping("/api/drones/enable/{id}")
-    public String enableDrone(@PathVariable int id) {
+    public void enableDrone(@PathVariable int id) {
         try {
             service.changeDroneToEnable(id);
-            return "Drone med ID " + id + " er nu i drift.";
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
     @PostMapping("/api/drones/disable/{id}")
-    public String disableDrone(@PathVariable int id) {
+    public void disableDrone(@PathVariable int id) {
         try {
             service.changeDroneToDisable(id);
-            return "Drone med ID " + id + " er nu i drift.";
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
     @PostMapping("/api/drones/retire/{id}")
-    public String retireDrone(@PathVariable int id) {
+    public void retireDrone(@PathVariable int id) {
         try {
             service.changeDroneToRetire(id);
-            return "Drone med ID " + id + " er nu i drift.";
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -82,5 +79,10 @@ public class RESTController {
     @GetMapping("/api/deliveries/queue")
     public List<Levering> getMissingDroneDeliveries(){
         return service.checkForMissingDrones();
+    }
+
+    @PostMapping("/api/deliveries/schedule/{ID}")
+    public void assignDrone(@PathVariable int ID){
+        service.assignDroneToDelivery(ID);
     }
 }
