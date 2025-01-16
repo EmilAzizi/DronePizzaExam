@@ -43,18 +43,55 @@
             color: red;
             font-weight: bold;
         }
+        .form-container {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .form-container input {
+            margin-right: 10px;
+            padding: 5px;
+            width: calc(100% - 140px);
+        }
+        .form-container button {
+            padding: 5px 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
 <h1>Leveringer</h1>
+
+<div class="form-container">
+    <input type="text" id="deliveryAddress" placeholder="Skriv leveringsadresse her..." />
+    <button id="addDeliveryButton">Tilføj Levering</button>
+
+</div>
+
 <div id="deliveriesContainer">
     <!-- Leveringer tilføjes her dynamisk -->
 </div>
 <div class="error" id="errorMessage"></div>
 
+
+<form action="/deliveries/queue" method="get">
+    <button class="button" id="viewDeliveries">Se alle leveringer uden en drone</button>
+</form>
+<form action="/drones" method="get">
+    <button type="submit">Tilbage</button>
+</form>
+
 <script>
     const deliveriesContainer = document.getElementById("deliveriesContainer");
     const errorMessage = document.getElementById("errorMessage");
+    const addDeliveryButton = document.getElementById("addDeliveryButton");
+    const deliveryAddressInput = document.getElementById("deliveryAddress");
 
     // Funktion til at hente leveringer
     async function fetchDeliveries() {
@@ -83,11 +120,38 @@
                 <p><strong>Adresse:</strong> ${delivery.adresse || "Ikke angivet"}</p>
                 <p><strong>Forventet Levering:</strong> ${delivery.forventet_levering || "Ikke angivet"}</p>
                 <p><strong>Faktisk Levering:</strong> ${delivery.faktisk_levering || "Ikke angivet"}</p>
-                <p><strong>Drone UUID:</strong> ${delivery.drone ? delivery.drone.serial_UUID : "Ingen drone"}</p>
             `;
             deliveriesContainer.appendChild(deliveryDiv);
         });
     }
+
+    // Funktion til at tilføje en levering
+    async function addDelivery() {
+        const address = deliveryAddressInput.value.trim();
+        if (!address) {
+            alert("Indtast venligst en leveringsadresse.");
+            return;
+        }
+
+        try {
+            const response = await fetch("/api/deliveries/add", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ adresse: address })
+            });
+            if (!response.ok) {
+                throw new Error("Kunne ikke tilføje leveringen.");
+            }
+            deliveryAddressInput.value = ""; // Rens inputfeltet
+            fetchDeliveries(); // Opdater listen efter tilføjelsen
+        } catch (error) {
+            errorMessage.textContent = error.message;
+            console.error(error.message);
+        }
+    }
+
+    // Event listener for at tilføje en levering
+    addDeliveryButton.addEventListener("click", addDelivery);
 
     // Hent leveringer ved indlæsning af siden
     fetchDeliveries();

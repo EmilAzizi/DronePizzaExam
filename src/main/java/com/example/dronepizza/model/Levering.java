@@ -12,7 +12,8 @@ public class Levering {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int levering_ID;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private LeveringStatus status;
 
     private String adresse;
     private String forventet_levering;
@@ -72,11 +73,11 @@ public class Levering {
         this.forventet_levering = forventet_levering;
     }
 
-    public String getStatus() {
+    public LeveringStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(LeveringStatus status) {
         this.status = status;
     }
 

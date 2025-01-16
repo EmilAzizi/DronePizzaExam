@@ -15,4 +15,9 @@ public class DEFAULTController {
     public String showDeliveries(){
         return "showDeliveries";
     }
+
+    @GetMapping("/deliveries/queue")
+    public String showMissingDroneDeliveries(){
+        return "showMissingDroneDeliveries";
+    }
 }

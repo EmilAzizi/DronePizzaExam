@@ -72,4 +72,15 @@ public class RESTController {
         List<Levering> allDeliveries = service.getAllDeliveriesFromRepository();
         return allDeliveries;
     }
+
+    @PostMapping("/api/deliveries/add")
+    public Levering createDelivery(@RequestBody Levering newLevering){
+        service.createDelivery(newLevering);
+        return newLevering;
+    }
+
+    @GetMapping("/api/deliveries/queue")
+    public List<Levering> getMissingDroneDeliveries(){
+        return service.checkForMissingDrones();
+    }
 }
