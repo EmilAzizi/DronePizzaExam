@@ -13,8 +13,8 @@ public class Station {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int station_ID;
-    private double lat;
-    private double lon;
+    private String lat;
+    private String lon;
 
     @OneToMany(mappedBy = "station", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("station-drones") // Specificer entydig værdi
@@ -28,11 +28,11 @@ public class Station {
         return station_ID;
     }
 
-    public double getLat() {
+    public String getLat() {
         return lat;
     }
 
-    public double getLon() {
+    public String getLon() {
         return lon;
     }
 
@@ -40,11 +40,11 @@ public class Station {
         return drones;
     }
 
-    public void setLat(double lat) {
+    public void setLat(String lat) {
         this.lat = lat;
     }
 
-    public void setLon(double lon) {
+    public void setLon(String lon) {
         this.lon = lon;
     }
 

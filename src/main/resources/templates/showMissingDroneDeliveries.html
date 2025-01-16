@@ -147,7 +147,6 @@
       if (!response.ok) {
         throw new Error(`Kunne ikke tildele en drone til levering ID: ${deliveryId}`);
       }
-      alert(`Drone tildelt til levering ID: ${deliveryId}`);
       fetchDeliveries(); // Opdater listen efter tildeling
     } catch (error) {
       errorMessage.textContent = error.message;

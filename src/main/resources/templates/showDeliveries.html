@@ -137,7 +137,6 @@
     async function addDelivery() {
         const address = deliveryAddressInput.value.trim();
         if (!address) {
-            alert("Indtast venligst en leveringsadresse.");
             return;
         }
 
@@ -165,7 +164,6 @@
             if (!response.ok) {
                 throw new Error("Kunne ikke afslutte leveringen.");
             }
-            alert(`Levering med ID ${id} er afsluttet.`);
             fetchDeliveries(); // Opdater listen efter afslutningen
         } catch (error) {
             errorMessage.textContent = error.message;

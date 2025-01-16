@@ -154,7 +154,6 @@
                     if (!response.ok) {
                         throw new Error(`Kunne ikke ændre status til "${action}".`);
                     }
-                    alert(`Dronens status er ændret til "${action}".`);
                     fetchStations(); // Opdater listen
                 } catch (error) {
                     console.error(error.message);

@@ -20,9 +20,9 @@ public class DATAService {
 
     private List<Levering> allDeliveries;
 
-    private List<Drone> availableDrones = new ArrayList<>();
-
     private List<Levering> deliveriesMissingDrone = new ArrayList<>();
+
+    private List<Pizza> allPizzas;
 
     public DATAService(BERepository repository){
         this.repository = repository;
@@ -125,19 +125,31 @@ public class DATAService {
         return allDeliveries;
     }
 
-    public void createDelivery(Levering levering){
+    public void createDelivery(Levering levering) {
         Levering leveringToSaveInDB = levering;
 
+        // Sæt leveringsstatus
         leveringToSaveInDB.setStatus(LeveringStatus.IKKE_LEVERET);
 
+        // Beregn forventet leveringstid
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime expectedDeliveryTime = currentTime.plusMinutes(30);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-
         leveringToSaveInDB.setForventet_levering(expectedDeliveryTime.format(formatter));
 
+        // Tilfældig pizza fra listen
+        List<Pizza> allPizzas = repository.getAllPizzas(); // Antager, at der er en metode i repository til at hente alle pizzaer
+        if (allPizzas.isEmpty()) {
+            throw new IllegalStateException("Ingen pizzaer tilgængelige i systemet.");
+        }
+        Random random = new Random();
+        Pizza randomPizza = allPizzas.get(random.nextInt(allPizzas.size()));
+        leveringToSaveInDB.setPizza(randomPizza);
+
+        // Gem leveringen i databasen
         repository.saveDelivery(leveringToSaveInDB);
     }
+
 
     public List<Levering> checkForMissingDrones(){
         deliveriesMissingDrone.clear();
