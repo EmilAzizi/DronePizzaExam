@@ -2,6 +2,7 @@ package com.example.dronepizza.repository;
 
 import com.example.dronepizza.model.Drone;
 import com.example.dronepizza.model.Levering;
+import com.example.dronepizza.model.Pizza;
 import com.example.dronepizza.model.Station;
 import org.springframework.stereotype.Repository;
 
@@ -54,4 +55,9 @@ public class BERepository {
     public void saveDelivery(Levering levering){
         leveringInterface.save(levering);
     }
+
+    public List<Pizza> getAllPizzas() {
+        return pizzaInterface.findAll();
+    }
+
 }

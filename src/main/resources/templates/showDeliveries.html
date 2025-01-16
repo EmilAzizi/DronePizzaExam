@@ -83,7 +83,6 @@
 </div>
 
 <div id="deliveriesContainer">
-    <!-- Leveringer tilføjes her dynamisk -->
 </div>
 <div class="error" id="errorMessage"></div>
 
@@ -100,7 +99,6 @@
     const addDeliveryButton = document.getElementById("addDeliveryButton");
     const deliveryAddressInput = document.getElementById("deliveryAddress");
 
-    // Funktion til at hente leveringer
     async function fetchDeliveries() {
         try {
             const response = await fetch("/api/deliveries");
@@ -115,9 +113,8 @@
         }
     }
 
-    // Funktion til at vise leveringer
     function renderDeliveries(deliveries) {
-        deliveriesContainer.innerHTML = ""; // Tøm containeren
+        deliveriesContainer.innerHTML = "";
         deliveries.forEach(delivery => {
             const deliveryDiv = document.createElement("div");
             deliveryDiv.className = "delivery";
@@ -133,11 +130,9 @@
         });
     }
 
-    // Funktion til at tilføje en levering
     async function addDelivery() {
         const address = deliveryAddressInput.value.trim();
         if (!address) {
-            alert("Indtast venligst en leveringsadresse.");
             return;
         }
 
@@ -150,30 +145,27 @@
             if (!response.ok) {
                 throw new Error("Kunne ikke tilføje leveringen.");
             }
-            deliveryAddressInput.value = ""; // Rens inputfeltet
-            fetchDeliveries(); // Opdater listen efter tilføjelsen
+            deliveryAddressInput.value = "";
+            fetchDeliveries();
         } catch (error) {
             errorMessage.textContent = error.message;
             console.error(error.message);
         }
     }
 
-    // Funktion til at afslutte en levering
     async function finishDelivery(id) {
         try {
             const response = await fetch(`/api/deliveries/finish/${id}`, { method: "POST" });
             if (!response.ok) {
                 throw new Error("Kunne ikke afslutte leveringen.");
             }
-            alert(`Levering med ID ${id} er afsluttet.`);
-            fetchDeliveries(); // Opdater listen efter afslutningen
+            fetchDeliveries();
         } catch (error) {
             errorMessage.textContent = error.message;
             console.error(error.message);
         }
     }
 
-    // Event listener for at afslutte en levering
     deliveriesContainer.addEventListener("click", (event) => {
         if (event.target.classList.contains("finish-button")) {
             const deliveryId = event.target.dataset.id;
@@ -181,12 +173,10 @@
         }
     });
 
-    // Event listener for at tilføje en levering
     addDeliveryButton.addEventListener("click", addDelivery);
 
-    // Hent leveringer ved indlæsning af siden
     fetchDeliveries();
-    setInterval(fetchDeliveries, 60000); // Opdater hver 60. sekund
+    setInterval(fetchDeliveries, 60000);
 </script>
 </body>
 </html>

@@ -84,7 +84,6 @@
 </div>
 
 <div id="deliveriesContainer">
-  <!-- Leveringer tilføjes her dynamisk -->
 </div>
 <div class="error" id="errorMessage"></div>
 
@@ -92,7 +91,6 @@
   const deliveriesContainer = document.getElementById("deliveriesContainer");
   const errorMessage = document.getElementById("errorMessage");
 
-  // Funktion til at hente leveringer uden droner
   async function fetchDeliveries() {
     try {
       const response = await fetch("/api/deliveries/queue");
@@ -107,9 +105,8 @@
     }
   }
 
-  // Funktion til at vise leveringer
   function renderDeliveries(deliveries) {
-    deliveriesContainer.innerHTML = ""; // Tøm containeren
+    deliveriesContainer.innerHTML = "";
     deliveries.forEach(delivery => {
       const deliveryDiv = document.createElement("div");
       deliveryDiv.className = "delivery";
@@ -131,14 +128,12 @@
       deliveriesContainer.appendChild(deliveryDiv);
     });
 
-    // Tilføj event listeners til knapperne
     const assignButtons = document.querySelectorAll(".assign-button");
     assignButtons.forEach(button => {
       button.addEventListener("click", () => assignDrone(button.dataset.deliveryId));
     });
   }
 
-  // Funktion til at tildele en drone til en levering
   async function assignDrone(deliveryId) {
     try {
       const response = await fetch(`/api/deliveries/schedule/${deliveryId}`, {
@@ -147,17 +142,15 @@
       if (!response.ok) {
         throw new Error(`Kunne ikke tildele en drone til levering ID: ${deliveryId}`);
       }
-      alert(`Drone tildelt til levering ID: ${deliveryId}`);
-      fetchDeliveries(); // Opdater listen efter tildeling
+      fetchDeliveries();
     } catch (error) {
       errorMessage.textContent = error.message;
       console.error(error.message);
     }
   }
 
-  // Hent leveringer ved indlæsning af siden
   fetchDeliveries();
-  setInterval(fetchDeliveries, 60000); // Opdater hver 60. sekund
+  setInterval(fetchDeliveries, 60000);
 </script>
 </body>
 </html>

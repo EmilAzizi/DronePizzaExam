@@ -54,7 +54,6 @@
 <body>
 <h1>Stationer og Droner</h1>
 <div id="stationsContainer">
-    <!-- Stationer og deres droner tilføjes her dynamisk -->
 </div>
 <button class="button" id="addDroneButton">Tilføj ny Drone</button>
 <button class="button" id="viewDeliveries">Se alle leveringer</button>
@@ -66,10 +65,9 @@
     document.getElementById('viewDeliveries').addEventListener('click', function (){
        window.location.href = "deliveries";
     });
-    // Funktion til at hente stationer og droner
     async function fetchStations() {
         try {
-            const response = await fetch("/api/stations"); // Antager dette endpoint returnerer stationer med droner
+            const response = await fetch("/api/stations");
             if (!response.ok) {
                 throw new Error("Kunne ikke hente stationer.");
             }
@@ -80,9 +78,8 @@
         }
     }
 
-    // Funktion til at rendere stationer og droner
     function renderStations(stations) {
-        stationsContainer.innerHTML = ""; // Tøm containeren
+        stationsContainer.innerHTML = "";
         stations.forEach(station => {
             const stationDiv = document.createElement("div");
             stationDiv.className = "station";
@@ -116,32 +113,29 @@
         });
     }
 
-    // Funktion til at tilføje en ny drone
     async function addDrone() {
         try {
             const response = await fetch("/api/drones/add", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    serial_UUID: crypto.randomUUID() // Genererer et unikt ID til dronen
+                    serial_UUID: crypto.randomUUID()
                 })
             });
             if (!response.ok) {
                 throw new Error("Kunne ikke tilføje ny drone.");
             }
-            fetchStations(); // Opdater listen efter tilføjelsen
+            fetchStations();
         } catch (error) {
             console.error(error.message);
         }
     }
 
-    // Event listener for statusændring
     document.addEventListener("click", async (event) => {
         if (event.target.classList.contains("change-status-button")) {
-            const droneId = event.target.dataset.droneId; // Hent drone ID
-            const action = event.target.dataset.action;   // Hent action (enable, disable, retire)
+            const droneId = event.target.dataset.droneId;
+            const action = event.target.dataset.action;
 
-            // Kortlæg action til de tilsvarende endpoints
             const endpointMap = {
                 enable: `/api/drones/enable/${droneId}`,
                 disable: `/api/drones/disable/${droneId}`,
@@ -154,8 +148,7 @@
                     if (!response.ok) {
                         throw new Error(`Kunne ikke ændre status til "${action}".`);
                     }
-                    alert(`Dronens status er ændret til "${action}".`);
-                    fetchStations(); // Opdater listen
+                    fetchStations();
                 } catch (error) {
                     console.error(error.message);
                 }
@@ -166,12 +159,10 @@
     });
 
 
-    // Event Listener for at tilføje en ny drone
     addDroneButton.addEventListener("click", addDrone);
 
-    // Hent data ved siden indlæses
     fetchStations();
-    setInterval(fetchStations, 60000); // Opdater hver 60. sekund
+    setInterval(fetchStations, 60000);
 </script>
 </body>
 </html>

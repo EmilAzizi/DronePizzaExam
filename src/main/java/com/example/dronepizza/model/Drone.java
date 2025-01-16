@@ -22,11 +22,11 @@ public class Drone {
 
     @ManyToOne
     @JoinColumn(name = "station_ID")
-    @JsonBackReference("station-drones") // Specificer entydig værdi
+    @JsonBackReference("station-drones")
     private Station station;
 
     @OneToMany(mappedBy = "drone", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("drone-levering") // Specificer entydig værdi
+    @JsonManagedReference("drone-levering")
     private List<Levering> leveringList = new ArrayList<>();
 
     public Drone(){

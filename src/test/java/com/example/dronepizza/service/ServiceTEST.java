@@ -31,24 +31,20 @@ public class ServiceTEST {
 
     @Test
     public void testCreateDrone_NoStations() {
-        // Arrange
-        List<Station> mockStations = new ArrayList<>(); // Ingen stationer
+        List<Station> mockStations = new ArrayList<>();
         when(repository.getAllStations()).thenReturn(mockStations);
 
         Drone testDrone = new Drone();
 
-        // Act
         dataService.createDrone(testDrone);
 
-        // Assert
-        verify(repository, never()).saveDroneInDB(any(Drone.class)); // Dronen skal ikke gemmes
+        verify(repository, never()).saveDroneInDB(any(Drone.class));
         assertNull(testDrone.getStation(), "Station should not be set for the drone.");
         assertNull(testDrone.getDriftStatus(), "DriftStatus should not be set for the drone.");
     }
 
     @Test
     public void testCreateDrone_WithStations() {
-        // Arrange
         List<Station> mockStations = new ArrayList<>();
         Station station1 = new Station();
         mockStations.add(station1);
@@ -57,44 +53,36 @@ public class ServiceTEST {
 
         Drone testDrone = new Drone();
 
-        // Act
         dataService.createDrone(testDrone);
 
-        // Assert
-        verify(repository, times(1)).saveDroneInDB(testDrone); // Dronen skal gemmes
+        verify(repository, times(1)).saveDroneInDB(testDrone);
         assertEquals(station1, testDrone.getStation(), "Drone should be assigned to the station.");
         assertEquals(DriftStatus.I_DRIFT, testDrone.getDriftStatus(), "DriftStatus should be set to I_DRIFT.");
     }
 
     @Test
     public void testFindStationWithLowestDrones() {
-        // Arrange
         List<Station> mockStations = new ArrayList<>();
         Station station1 = new Station();
-        station1.setDrones(new ArrayList<>()); // Ingen droner
+        station1.setDrones(new ArrayList<>());
         Station station2 = new Station();
         List<Drone> station2Drones = new ArrayList<>();
         station2Drones.add(new Drone());
-        station2.setDrones(station2Drones); // 1 drone
+        station2.setDrones(station2Drones);
         mockStations.add(station1);
         mockStations.add(station2);
 
-        // Act
         Station result = dataService.findStationWithLowestDrones(mockStations);
 
-        // Assert
         assertEquals(station1, result, "Station with the fewest drones should be returned.");
     }
 
     @Test
     public void testFindStationWithLowestDrones_EmptyStations() {
-        // Arrange
         List<Station> mockStations = new ArrayList<>();
 
-        // Act
         Station result = dataService.findStationWithLowestDrones(mockStations);
 
-        // Assert
         assertNull(result, "Should return null when no stations are available.");
     }
 
