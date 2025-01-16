@@ -1,5 +1,6 @@
 package com.example.dronepizza.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -19,10 +20,12 @@ public class Levering {
 
     @ManyToOne
     @JoinColumn(name = "drone_ID")
+    @JsonBackReference("drone-levering") // Specificer entydig værdi
     private Drone drone;
 
     @ManyToOne
     @JoinColumn(name = "pizza_ID")
+    @JsonBackReference("pizza-levering") // Specificer entydig værdi
     private Pizza pizza;
 
     public Levering(){

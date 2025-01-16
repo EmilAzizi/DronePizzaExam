@@ -1,5 +1,8 @@
 package com.example.dronepizza.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -14,6 +17,7 @@ public class Station {
     private double lon;
 
     @OneToMany(mappedBy = "station", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("station-drones") // Specificer entydig værdi
     private List<Drone> drones = new ArrayList<>();
 
     public Station(){

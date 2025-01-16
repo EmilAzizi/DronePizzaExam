@@ -1,9 +1,13 @@
 package com.example.dronepizza.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 public class Drone {
@@ -13,17 +17,20 @@ public class Drone {
 
     private String serial_UUID;
 
-    private String driftStatus;
+    @Enumerated(EnumType.STRING)
+    private DriftStatus driftStatus;
 
     @ManyToOne
     @JoinColumn(name = "station_ID")
+    @JsonBackReference("station-drones") // Specificer entydig værdi
     private Station station;
 
     @OneToMany(mappedBy = "drone", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("drone-levering") // Specificer entydig værdi
     private List<Levering> leveringList = new ArrayList<>();
 
     public Drone(){
-
+        this.serial_UUID = UUID.randomUUID().toString();
     }
 
     public int getDrone_ID() {
@@ -38,7 +45,7 @@ public class Drone {
         return station;
     }
 
-    public String getDriftStatus() {
+    public DriftStatus getDriftStatus() {
         return driftStatus;
     }
 
@@ -50,7 +57,7 @@ public class Drone {
         this.drone_ID = drone_ID;
     }
 
-    public void setDriftStatus(String driftStatus) {
+    public void setDriftStatus(DriftStatus driftStatus) {
         this.driftStatus = driftStatus;
     }
 
