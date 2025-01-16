@@ -15,4 +15,36 @@ public class Station {
 
     @OneToMany(mappedBy = "station", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Drone> drones = new ArrayList<>();
+
+    public Station(){
+
+    }
+
+    public int getStation_ID() {
+        return station_ID;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
+    public List<Drone> getDrones() {
+        return drones;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public void setLon(double lon) {
+        this.lon = lon;
+    }
+
+    public void setDrones(List<Drone> drones) {
+        this.drones = drones;
+    }
 }

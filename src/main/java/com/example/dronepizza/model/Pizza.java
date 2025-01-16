@@ -13,4 +13,27 @@ public class Pizza {
     private String titel;
     private int pris;
 
+    public Pizza(){
+
+    }
+
+    public int getPizza_ID() {
+        return pizza_ID;
+    }
+
+    public String getTitel() {
+        return titel;
+    }
+
+    public int getPris() {
+        return pris;
+    }
+
+    public void setTitel(String titel) {
+        this.titel = titel;
+    }
+
+    public void setPris(int pris) {
+        this.pris = pris;
+    }
 }
