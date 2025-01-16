@@ -22,8 +22,6 @@ public class DATAService {
 
     private List<Levering> deliveriesMissingDrone = new ArrayList<>();
 
-    private List<Pizza> allPizzas;
-
     public DATAService(BERepository repository){
         this.repository = repository;
     }
@@ -128,17 +126,14 @@ public class DATAService {
     public void createDelivery(Levering levering) {
         Levering leveringToSaveInDB = levering;
 
-        // Sæt leveringsstatus
         leveringToSaveInDB.setStatus(LeveringStatus.IKKE_LEVERET);
 
-        // Beregn forventet leveringstid
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime expectedDeliveryTime = currentTime.plusMinutes(30);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         leveringToSaveInDB.setForventet_levering(expectedDeliveryTime.format(formatter));
 
-        // Tilfældig pizza fra listen
-        List<Pizza> allPizzas = repository.getAllPizzas(); // Antager, at der er en metode i repository til at hente alle pizzaer
+        List<Pizza> allPizzas = repository.getAllPizzas();
         if (allPizzas.isEmpty()) {
             throw new IllegalStateException("Ingen pizzaer tilgængelige i systemet.");
         }
@@ -146,7 +141,6 @@ public class DATAService {
         Pizza randomPizza = allPizzas.get(random.nextInt(allPizzas.size()));
         leveringToSaveInDB.setPizza(randomPizza);
 
-        // Gem leveringen i databasen
         repository.saveDelivery(leveringToSaveInDB);
     }
 
@@ -163,7 +157,6 @@ public class DATAService {
     }
 
     public void assignDroneToDelivery(int deliveryID) {
-        // Find leveringen uden en drone
         Levering deliveryToAssignDroneTo = null;
         allDeliveries = repository.getAllDeliveries();
 
@@ -181,23 +174,18 @@ public class DATAService {
             throw new IllegalArgumentException("Levering med ID " + deliveryID + " blev ikke fundet.");
         }
 
-        // Tjek om der overhovedet er en tilgængelig drone
         allDrones = repository.getAllDrones();
         if (allDrones.stream().noneMatch(drone -> drone.getDriftStatus() == DriftStatus.I_DRIFT && drone.getLeveringList().isEmpty())) {
             throw new IllegalStateException("Ingen droner tilgængelige til levering.");
         }
 
-        // Find en drone, der er "i drift" og ikke er i brug
         boolean droneFound = false;
         Random random = new Random();
 
         while (!droneFound) {
-            // Vælg en tilfældig drone
             Drone randomDrone = allDrones.get(random.nextInt(allDrones.size()));
 
-            // Tjek om dronen er i drift og ikke er i brug
             if (randomDrone.getDriftStatus() == DriftStatus.I_DRIFT && randomDrone.getLeveringList().isEmpty()) {
-                // Tildel dronen til leveringen
                 deliveryToAssignDroneTo.setDrone(randomDrone);
                 repository.saveDelivery(deliveryToAssignDroneTo);
                 droneFound = true;
@@ -219,7 +207,6 @@ public class DATAService {
             }
         }
 
-        // Hvis leveringen ikke blev fundet, smid en exception
         if (deliveryToFinish == null) {
             throw new IllegalArgumentException("Levering med ID " + ID + " blev ikke fundet.");
         }
@@ -228,7 +215,6 @@ public class DATAService {
             throw new IllegalArgumentException("Leveringen er allerede færdig.");
         }
 
-        // Sæt leveringen til LEVERET
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime expectedDeliveryTime = currentTime.plusMinutes(0);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");

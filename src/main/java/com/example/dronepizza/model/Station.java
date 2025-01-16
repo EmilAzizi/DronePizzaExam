@@ -17,7 +17,7 @@ public class Station {
     private String lon;
 
     @OneToMany(mappedBy = "station", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("station-drones") // Specificer entydig værdi
+    @JsonManagedReference("station-drones")
     private List<Drone> drones = new ArrayList<>();
 
     public Station(){

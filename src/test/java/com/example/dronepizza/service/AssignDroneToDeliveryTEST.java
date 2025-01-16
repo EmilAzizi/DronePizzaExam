@@ -32,7 +32,6 @@ public class AssignDroneToDeliveryTEST {
 
     @Test
     public void testAssignDroneToDelivery_Success() {
-        // Arrange
         List<Levering> mockDeliveries = new ArrayList<>();
         Levering levering = new Levering();
         levering.setLevering_ID(1);
@@ -47,17 +46,14 @@ public class AssignDroneToDeliveryTEST {
         when(repository.getAllDeliveries()).thenReturn(mockDeliveries);
         when(repository.getAllDrones()).thenReturn(mockDrones);
 
-        // Act
         dataService.assignDroneToDelivery(1);
 
-        // Assert
         verify(repository, times(1)).saveDelivery(levering);
         assertEquals(availableDrone, levering.getDrone(), "Drone should be assigned to the delivery.");
     }
 
     @Test
     public void testAssignDroneToDelivery_NoAvailableDrones() {
-        // Arrange
         List<Levering> mockDeliveries = new ArrayList<>();
         Levering levering = new Levering();
         levering.setLevering_ID(1);
@@ -67,7 +63,6 @@ public class AssignDroneToDeliveryTEST {
         when(repository.getAllDeliveries()).thenReturn(mockDeliveries);
         when(repository.getAllDrones()).thenReturn(mockDrones);
 
-        // Act & Assert
         Exception exception = assertThrows(IllegalStateException.class, () -> {
             dataService.assignDroneToDelivery(1);
         });
@@ -76,7 +71,6 @@ public class AssignDroneToDeliveryTEST {
 
     @Test
     public void testAssignDroneToDelivery_AlreadyHasDrone() {
-        // Arrange
         List<Levering> mockDeliveries = new ArrayList<>();
         Levering levering = new Levering();
         levering.setLevering_ID(1);
@@ -87,7 +81,6 @@ public class AssignDroneToDeliveryTEST {
 
         when(repository.getAllDeliveries()).thenReturn(mockDeliveries);
 
-        // Act & Assert
         Exception exception = assertThrows(IllegalStateException.class, () -> {
             dataService.assignDroneToDelivery(1);
         });
@@ -96,11 +89,9 @@ public class AssignDroneToDeliveryTEST {
 
     @Test
     public void testAssignDroneToDelivery_InvalidDeliveryID() {
-        // Arrange
         List<Levering> mockDeliveries = new ArrayList<>();
         when(repository.getAllDeliveries()).thenReturn(mockDeliveries);
 
-        // Act & Assert
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             dataService.assignDroneToDelivery(99); // Ugyldigt ID
         });
